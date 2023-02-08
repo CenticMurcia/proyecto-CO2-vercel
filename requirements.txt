@@ -4,3 +4,4 @@ apscheduler
 requests
 numpy
 pandas
+joblib
