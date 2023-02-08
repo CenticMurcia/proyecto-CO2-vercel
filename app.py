@@ -45,17 +45,31 @@ def get_datetime():
     hist_Hora.append( hora )
 
 
+@app.route('/test')
+def test()
+    url      = "https://fiware.hopu.eu/keycloak/auth/realms/fiware-server/protocol/openid-connect/token" 
+    headers  = {"Content-Type": "application/x-www-form-urlencoded"}
+    data     = "username=julgonzalez&password=vZnAWE7FexwgEqwT&grant_type=password&client_id=fiware-login"
+    response = requests.post(url, data = data, headers = headers).json()
+    access_token  = response["access_token"]
+
+    url      = "https://fiware.hopu.eu/orion/v2/entities?limit=1000&attrs=*,dateModified&options=keyValues" 
+    headers  = {"fiware-service": "AirQuality", "fiware-servicepath": "/ctcon", "Authorization": "Bearer "+access_token}
+    response = requests.get(url, headers = headers).json()[0]
+
+    return response
+
 
 # 1. Iniciar sesion en el APIRest de Hopu
 #    Obtener access token y refress token
 
 def API_get_token():
+    global access_token, refresh_token
+
     url      = "https://fiware.hopu.eu/keycloak/auth/realms/fiware-server/protocol/openid-connect/token" 
     headers  = {"Content-Type": "application/x-www-form-urlencoded"}
     data     = "username=julgonzalez&password=vZnAWE7FexwgEqwT&grant_type=password&client_id=fiware-login"
     response = requests.post(url, data = data, headers = headers).json()
-
-    global access_token, refresh_token
 
     access_token  = response["access_token"]
     refresh_token = response["refresh_token"]
@@ -63,11 +77,11 @@ def API_get_token():
 
 def API_get_device_status(access_token):
 
+    global access_token, operationalStatus
+
     url      = "https://fiware.hopu.eu/orion/v2/entities?limit=1000&attrs=*,dateModified&options=count,keyValues" 
     headers  = {"fiware-service": "Device", "fiware-servicepath": "/ctcon", "Authorization": "Bearer "+access_token}
     response = requests.get(url, headers = headers).json()[0]
-
-    global operationalStatus
 
     operationalStatus = response["operationalStatus"]
 
@@ -75,11 +89,11 @@ def API_get_device_status(access_token):
 
 def API_get_calidad_aire(access_token):
 
+    global access_token, hist_CO2, hist_PM10, hist_PM25, hist_Temperatura, hist_Humedad
+
     url      = "https://fiware.hopu.eu/orion/v2/entities?limit=1000&attrs=*,dateModified&options=keyValues" 
     headers  = {"fiware-service": "AirQuality", "fiware-servicepath": "/ctcon", "Authorization": "Bearer "+access_token}
     response = requests.get(url, headers = headers).json()[0]
-
-    global hist_CO2, hist_PM10, hist_PM25, hist_Temperatura, hist_Humedad
 
     hist_CO2.append(         response["CO2"]         )
     hist_PM10.append(        response["PM10"]        )
@@ -91,11 +105,11 @@ def API_get_calidad_aire(access_token):
 
 def API_get_presencia(access_token):
 
+    global access_token, hist_PersonasIn, hist_PersonasOut, hist_Personas
+
     url      = "https://fiware.hopu.eu/orion/v2/entities?limit=1000&attrs=*,dateModified&options=count,keyValues" 
     headers  = {"fiware-service": "PeopleCounting", "fiware-servicepath": "/ctcon", "Authorization": "Bearer "+access_token}
     response = requests.get(url, headers = headers).json()[0]
-
-    global hist_PersonasIn, hist_PersonasOut, hist_Personas
 
     hist_PersonasIn.append(  response["numberOfIncoming"] )
     hist_PersonasOut.append( response["numberOfOutgoing"] )
