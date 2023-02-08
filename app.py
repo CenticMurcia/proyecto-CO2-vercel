@@ -4,7 +4,8 @@
 
 import requests
 from flask import Flask, render_template
-from apscheduler.schedulers.background import BackgroundScheduler
+from threading import Thread
+from apscheduler.schedulers.background import BackgroundScheduler, BlockingScheduler
 #from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
 from datetime import datetime
 import pytz
@@ -279,18 +280,30 @@ def downloadData ():
     return data
 
 
+def updater():
+    # https://apscheduler.readthedocs.io/en/3.x/userguide.html#choosing-the-right-scheduler-job-store-s-executor-s-and-trigger-s
+    # scheduler = BackgroundScheduler(timezone='Europe/Madrid') # Default timezone is "utc"
+    scheduler = BlockingScheduler(timezone='Europe/Madrid')     # Default timezone is "utc"
+
+
+    #scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'interval', seconds=5)
+    #scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'cron', day_of_week='*', hour='*', minute='*')
+    #scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'cron', day_of_week='mon-fri', hour='7-20', minute='*/5')
+    scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'cron', day_of_week='*', hour='*', minute='*')
+
+    scheduler.start()
+
+
+
+
 #if __name__ == '__main__':
 # MAIN
 
 fill_data_from_HOPU_and_do_ML()
 
-scheduler = BackgroundScheduler(timezone='Europe/Madrid') # Default timezone is "utc"
-#scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'interval', seconds=5)
-#scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'cron', day_of_week='*', hour='*', minute='*')
-#scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'cron', day_of_week='mon-fri', hour='7-20', minute='*/5')
-scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'cron', day_of_week='*', hour='*', minute='*/5')
+updater_thread = Thread(target=updater)
+updater_thread.start()
 
-scheduler.start()
 
 # START APP: flask run --host=0.0.0.0
 
