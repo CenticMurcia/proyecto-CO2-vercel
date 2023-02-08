@@ -221,6 +221,8 @@ def fill_data_from_HOPU_and_do_ML():
 
     ####### Get last 4 rows from tmp/data.csv and do ML predictions
     get_ml_predictions()
+    
+    return "Ok"
 
 
 
