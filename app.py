@@ -41,6 +41,7 @@ def get_datetime():
     time = dt.strftime("%H:%M:%S")
     hora = dt.strftime("%H:%M")
 
+    global hist_Hora
     hist_Hora.append( hora )
 
 
@@ -78,6 +79,8 @@ def API_get_calidad_aire(access_token):
     headers  = {"fiware-service": "AirQuality", "fiware-servicepath": "/ctcon", "Authorization": "Bearer "+access_token}
     response = requests.get(url, headers = headers).json()[0]
 
+    global hist_CO2, hist_PM10, hist_PM25, hist_Temperatura, hist_Humedad
+
     hist_CO2.append(         response["CO2"]         )
     hist_PM10.append(        response["PM10"]        )
     hist_PM25.append(        response["PM25"]        )
@@ -91,6 +94,8 @@ def API_get_presencia(access_token):
     url      = "https://fiware.hopu.eu/orion/v2/entities?limit=1000&attrs=*,dateModified&options=count,keyValues" 
     headers  = {"fiware-service": "PeopleCounting", "fiware-servicepath": "/ctcon", "Authorization": "Bearer "+access_token}
     response = requests.get(url, headers = headers).json()[0]
+
+    global hist_PersonasIn, hist_PersonasOut, hist_Personas
 
     hist_PersonasIn.append(  response["numberOfIncoming"] )
     hist_PersonasOut.append( response["numberOfOutgoing"] )
@@ -160,26 +165,11 @@ def get_predictions(observed_array, n_points_to_predict):
 
 
 
-hist_Hora = []
-hist_CO2  = []
-hist_PM10 = []
-hist_PM25 = []
-hist_Temperatura = []
-hist_Humedad = []
-hist_PersonasIn = []
-hist_PersonasOut = []
-hist_Personas = []
-
-show_Hora = ["Iniciando..."]
-show_CO2  = [-1]
-show_PM10 = [-1]
-show_PM25 = [-1]
-CO2_msg   = ""
-PM10_msg  = ""
-PM25_msg  = ""
-
-
 def get_ml_predictions():
+
+    global hist_Hora, hist_PM25, hist_PM10, hist_CO2
+    global show_Hora, show_PM25, show_PM10, show_CO2
+    global CO2_msg, PM10_msg, PM25_msg
 
     if len(hist_Hora) >= 4:
 
@@ -227,6 +217,10 @@ def fill_data_from_HOPU_and_do_ML():
 
 @app.route('/')
 def web_endpoint():
+
+    global show_Hora, show_PM25, show_PM10, show_CO2
+    global CO2_msg, PM10_msg, PM25_msg
+
     data={
         "x_labels":   show_Hora,
         "CO2":        show_CO2, #[120, 153, 213, 230, 240, 220, 180, 120],
@@ -241,6 +235,10 @@ def web_endpoint():
 
 @app.route('/data')
 def downloadData ():
+
+    global hist_Hora, hist_PM25, hist_PM10, hist_CO2
+    global hist_Temperatura, hist_Humedad
+    global hist_Personas, hist_PersonasIn, hist_PersonasOut
 
     MAX = 1000
     data = {
