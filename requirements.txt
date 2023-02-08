@@ -2,6 +2,3 @@ pytz
 flask
 apscheduler
 requests
-numpy
-pandas
-
