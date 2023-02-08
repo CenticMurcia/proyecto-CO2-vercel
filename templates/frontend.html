@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+
+    <!-- Automatic refresh every seconds specified in content -->
+    <meta http-equiv="refresh" content="60">
+    <style>
+      h1   {font-family: arial;}
+      h5   {font-family: arial;}
+    </style>
+  </head>
+
+   
+  <body>
+
+    <img src="/static/LOGO-URDECON.png" style="height:100px;float:right;margin-right:25px;">
+
+    <h1>Calidad del aire</h1>
+
+    <h5>{{ CO2_msg }}</h5>
+    <canvas class="my-4" id="CO2Chart" width="900" height="170"></canvas>
+
+    <h5>{{ PM10_msg }}</h5>
+    <h5>{{ PM25_msg }}</h5>
+    <canvas class="my-4" id="PartChart" width="900" height="170"></canvas>
+
+
+    <!-- Graphs -->
+    <!-- https://codepen.io/shubich/pen/OZXjWL -->
+    <!-- https://stackoverflow.com/a/69769314 -->
+    <!-- view-source:https://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+    <!-- https://stackoverflow.com/questions/39399264/in-chartjs-is-it-possible-to-change-the-line-style-between-different-points -->
+
+    <!--<script src="https://cdn.jsdelivr.net/npm/chart.js@2.7.1/dist/Chart.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.js"></script>
+    <script>
+
+      //console.log({{ x_labels }});
+
+
+      var ctx = document.getElementById("CO2Chart").getContext('2d');
+      var CO2Chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: {{ x_labels|safe }},
+          datasets: [{
+            label: "C02",
+            data: {{ CO2 }},
+            cubicInterpolationMode: 'monotone',
+            borderColor: '#007bff',
+            borderWidth: 4,
+            pointBackgroundColor: '#007bff',
+            // borderDash = []    es linea continua
+            // borderDash = [8,8] es linea discontinua
+            segment: { borderDash: ctx => ctx.p0DataIndex<3 ? [] : [8,8]}
+          }]
+        },
+        options: {
+          scales: { yAxes: [{ ticks: { beginAtZero: false } }] },
+          legend: { display: false }
+        }
+      });
+
+
+      var ctx = document.getElementById("PartChart");
+      var CO2Chart = new Chart(ctx, {
+        type: 'line',
+
+        data: {
+          labels: {{ x_labels|safe }},
+          datasets: [{
+            label: "Partículas < 10 micras",
+            data: {{ PM10 }},
+            cubicInterpolationMode: 'monotone',
+            borderColor: '#cddc39',
+            borderWidth: 4,
+            pointBackgroundColor: '#cddc39',
+            segment: { borderDash: ctx => ctx.p0DataIndex<3 ? [] : [8,8]}
+          },
+          {
+            label: "Partículas < 2,5 micras",
+            data: {{ PM25 }},
+            cubicInterpolationMode: 'monotone',
+            borderColor: '#4caf50',
+            borderWidth: 4,
+            pointBackgroundColor: '#4caf50',
+            segment: { borderDash: ctx => ctx.p0DataIndex<3 ? [] : [8,8]}
+
+          }]
+        },
+        options: {
+          scales: { yAxes: [{ ticks: { beginAtZero: false } }] },
+          legend: { display: false }
+        }
+      });
+    </script>
+
+  </body>
+</html>
+
+
+
+
