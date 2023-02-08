@@ -4,9 +4,8 @@
 
 import requests
 from flask import Flask, render_template
-from threading import Thread
-from apscheduler.schedulers.background import BackgroundScheduler, BlockingScheduler
-#from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
+#from threading import Thread
+#from apscheduler.schedulers.background import BackgroundScheduler, BlockingScheduler
 from datetime import datetime
 import pytz
 import time
@@ -246,6 +245,8 @@ def web_endpoint():
     global show_Hora, show_PM25, show_PM10, show_CO2
     global CO2_msg, PM10_msg, PM25_msg
 
+    fill_data_from_HOPU_and_do_ML()
+
     data={
         "x_labels":   show_Hora,
         "CO2":        show_CO2, #[120, 153, 213, 230, 240, 220, 180, 120],
@@ -280,6 +281,7 @@ def downloadData ():
     return data
 
 
+"""
 def updater():
     # https://apscheduler.readthedocs.io/en/3.x/userguide.html#choosing-the-right-scheduler-job-store-s-executor-s-and-trigger-s
     # scheduler = BackgroundScheduler(timezone='Europe/Madrid') # Default timezone is "utc"
@@ -298,17 +300,15 @@ def updater2():
     while True:
         fill_data_from_HOPU_and_do_ML()
         time.sleep(4) # 5*60 = 5 minutes 
-        
+
+updater_thread = Thread(target=updater2)
+updater_thread.start()
+"""
 
 
 
 #if __name__ == '__main__':
 # MAIN
-
-#fill_data_from_HOPU_and_do_ML()
-
-updater_thread = Thread(target=updater2)
-updater_thread.start()
 
 
 # START APP: flask run --host=0.0.0.0
