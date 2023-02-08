@@ -95,12 +95,12 @@ def API_get_presencia(access_token):
 ####################################
 
 def init_empty_data():
-    f = open("data.csv", "w")
+    f = open("tmp/data.csv", "w")
     f.write("Fecha,Hora,PersonasIn,PersonasOut,Personas,Temperatura,Humedad,CO2,PM10,PM25\n")
     f.close()
 
 def save_data():
-    f = open('data.csv', 'a')
+    f = open('tmp/data.csv', 'a')
     f.write(date+","+hora+","+
             str(PersonasIn)+","+
             str(PersonasOut)+","+
@@ -192,7 +192,7 @@ def get_ml_predictions():
     global ml_model
 
     # get tail(4) that means lag15, lag10, lag5, actual 
-    in_dat = pd.read_csv("data.csv").tail(4)
+    in_dat = pd.read_csv("tmp/data.csv").tail(4)
 
     hora_hist = in_dat["Hora"].values
     temp_hist = in_dat["Temperatura"].values # np array [temp_lag15, temp_lag10, temp_lag5, temp_actual] 
@@ -238,7 +238,7 @@ def fill_data_from_HOPU_and_do_ML():
     get_datetime()
     print("pipeline at " + date + " " + time)
 
-    ####### fill data from HOPU and save it into data.csv as a new row
+    ####### fill data from HOPU and save it into tmp/data.csv as a new row
     API_get_token()
     API_get_device_status(access_token)
     API_get_calidad_aire(access_token)    
@@ -246,7 +246,7 @@ def fill_data_from_HOPU_and_do_ML():
     print_data()
     save_data()
 
-    ####### Get last 4 rows from data.csv and do ML predictions
+    ####### Get last 4 rows from tmp/data.csv and do ML predictions
     get_ml_predictions()
 
 
@@ -268,7 +268,7 @@ def web_endpoint():
 
 @app.route('/data')
 def downloadData ():
-    return send_file("data.csv", as_attachment=True)
+    return send_file("tmp/data.csv", as_attachment=True)
 
 
 if __name__ == '__main__':
