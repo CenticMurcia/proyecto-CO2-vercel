@@ -9,7 +9,7 @@ from apscheduler.schedulers.background import BackgroundScheduler, BlockingSched
 #from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
 from datetime import datetime
 import pytz
-import os
+import time
 
 
 app = Flask(__name__)
@@ -293,15 +293,21 @@ def updater():
 
     scheduler.start()
 
+    
+def updater2():
+    while True:
+        fill_data_from_HOPU_and_do_ML()
+        time.sleep(4) # 5*60 = 5 minutes 
+        
 
 
 
 #if __name__ == '__main__':
 # MAIN
 
-fill_data_from_HOPU_and_do_ML()
+#fill_data_from_HOPU_and_do_ML()
 
-updater_thread = Thread(target=updater)
+updater_thread = Thread(target=updater2)
 updater_thread.start()
 
 
