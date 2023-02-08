@@ -73,7 +73,6 @@ def test2():
 #    Obtener access token y refress token
 
 def API_get_token():
-    global access_token, refresh_token
 
     url      = "https://fiware.hopu.eu/keycloak/auth/realms/fiware-server/protocol/openid-connect/token" 
     headers  = {"Content-Type": "application/x-www-form-urlencoded"}
@@ -81,12 +80,14 @@ def API_get_token():
     response = requests.post(url, data = data, headers = headers).json()
 
     access_token  = response["access_token"]
-    refresh_token = response["refresh_token"]
+    #refresh_token = response["refresh_token"]
+
+    return access_token
 
 
 def API_get_device_status(access_token):
 
-    global access_token, operationalStatus
+    global operationalStatus
 
     url      = "https://fiware.hopu.eu/orion/v2/entities?limit=1000&attrs=*,dateModified&options=count,keyValues" 
     headers  = {"fiware-service": "Device", "fiware-servicepath": "/ctcon", "Authorization": "Bearer "+access_token}
@@ -98,7 +99,7 @@ def API_get_device_status(access_token):
 
 def API_get_calidad_aire(access_token):
 
-    global access_token, hist_CO2, hist_PM10, hist_PM25, hist_Temperatura, hist_Humedad
+    global hist_CO2, hist_PM10, hist_PM25, hist_Temperatura, hist_Humedad
 
     url      = "https://fiware.hopu.eu/orion/v2/entities?limit=1000&attrs=*,dateModified&options=keyValues" 
     headers  = {"fiware-service": "AirQuality", "fiware-servicepath": "/ctcon", "Authorization": "Bearer "+access_token}
@@ -114,7 +115,7 @@ def API_get_calidad_aire(access_token):
 
 def API_get_presencia(access_token):
 
-    global access_token, hist_PersonasIn, hist_PersonasOut, hist_Personas
+    global hist_PersonasIn, hist_PersonasOut, hist_Personas
 
     url      = "https://fiware.hopu.eu/orion/v2/entities?limit=1000&attrs=*,dateModified&options=count,keyValues" 
     headers  = {"fiware-service": "PeopleCounting", "fiware-servicepath": "/ctcon", "Authorization": "Bearer "+access_token}
@@ -228,7 +229,7 @@ def fill_data_from_HOPU_and_do_ML():
     get_datetime() # Aqui se guardan historicos horas
 
     ####### fill data from HOPU and save it into tmp/data.csv as a new row
-    API_get_token()
+    access_token = API_get_token()
     API_get_device_status(access_token)
     API_get_calidad_aire(access_token)    # Aqui se guardan historicos calidad aire
     API_get_presencia(access_token)       # Aqui se guardan historicos personas
