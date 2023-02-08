@@ -45,28 +45,6 @@ def get_datetime():
     hist_Hora.append( hora )
 
 
-@app.route('/test1')
-def test1():
-    url      = "https://fiware.hopu.eu/keycloak/auth/realms/fiware-server/protocol/openid-connect/token" 
-    headers  = {"Content-Type": "application/x-www-form-urlencoded"}
-    data     = "username=julgonzalez&password=vZnAWE7FexwgEqwT&grant_type=password&client_id=fiware-login"
-    response = requests.post(url, data = data, headers = headers).json()
-
-    return response
-
-@app.route('/test2')
-def test2():
-    url      = "https://fiware.hopu.eu/keycloak/auth/realms/fiware-server/protocol/openid-connect/token" 
-    headers  = {"Content-Type": "application/x-www-form-urlencoded"}
-    data     = "username=julgonzalez&password=vZnAWE7FexwgEqwT&grant_type=password&client_id=fiware-login"
-    response = requests.post(url, data = data, headers = headers).json()
-    access_token  = response["access_token"]
-
-    url      = "https://fiware.hopu.eu/orion/v2/entities?limit=1000&attrs=*,dateModified&options=keyValues" 
-    headers  = {"fiware-service": "AirQuality", "fiware-servicepath": "/ctcon", "Authorization": "Bearer "+access_token}
-    response = requests.get(url, headers = headers).json()[0]
-
-    return response
 
 
 # 1. Iniciar sesion en el APIRest de Hopu
@@ -222,8 +200,15 @@ def get_ml_predictions():
         CO2_msg   = "No ha transcurrido el suficienciente tiempo (<15 mins) para predecir el CO2."
 
 
-####################################
 
+
+
+#################################### ENDPOINTS
+
+
+
+
+@app.route('/refresh') # Se llamara cada 5 minutos desde fuera (https://updown.io/)
 def fill_data_from_HOPU_and_do_ML():
 
     get_datetime() # Aqui se guardan historicos horas
@@ -245,8 +230,6 @@ def web_endpoint():
     global show_Hora, show_PM25, show_PM10, show_CO2
     global CO2_msg, PM10_msg, PM25_msg
 
-    fill_data_from_HOPU_and_do_ML()
-
     data={
         "x_labels":   show_Hora,
         "CO2":        show_CO2, #[120, 153, 213, 230, 240, 220, 180, 120],
@@ -259,8 +242,9 @@ def web_endpoint():
     return render_template('frontend.html', **data)
 
 
+
 @app.route('/data')
-def downloadData ():
+def seeData():
 
     global hist_Hora, hist_PM25, hist_PM10, hist_CO2
     global hist_Temperatura, hist_Humedad
