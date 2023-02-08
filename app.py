@@ -286,10 +286,11 @@ fill_data_from_HOPU_and_do_ML()
 
 scheduler = BackgroundScheduler(timezone='Europe/Madrid') # Default timezone is "utc"
 #scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'interval', seconds=5)
-scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'cron', day_of_week='*', hour='*', minute='*')
+#scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'cron', day_of_week='*', hour='*', minute='*')
 #scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'cron', day_of_week='mon-fri', hour='7-20', minute='*/5')
+scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'cron', day_of_week='*', hour='*', minute='*/5')
+
 scheduler.start()
-#app.run(host="0.0.0.0")
 
 # START APP: flask run --host=0.0.0.0
 
