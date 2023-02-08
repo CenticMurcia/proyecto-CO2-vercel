@@ -45,8 +45,17 @@ def get_datetime():
     hist_Hora.append( hora )
 
 
-@app.route('/test')
-def test()
+@app.route('/test1')
+def test1():
+    url      = "https://fiware.hopu.eu/keycloak/auth/realms/fiware-server/protocol/openid-connect/token" 
+    headers  = {"Content-Type": "application/x-www-form-urlencoded"}
+    data     = "username=julgonzalez&password=vZnAWE7FexwgEqwT&grant_type=password&client_id=fiware-login"
+    response = requests.post(url, data = data, headers = headers).json()
+
+    return response
+
+@app.route('/test2')
+def test2():
     url      = "https://fiware.hopu.eu/keycloak/auth/realms/fiware-server/protocol/openid-connect/token" 
     headers  = {"Content-Type": "application/x-www-form-urlencoded"}
     data     = "username=julgonzalez&password=vZnAWE7FexwgEqwT&grant_type=password&client_id=fiware-login"
