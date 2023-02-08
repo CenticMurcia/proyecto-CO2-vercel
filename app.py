@@ -1,6 +1,6 @@
 # Run the application (as long as is named app.py) with:
-# $ flask run 
-# $ python app.py 
+# $ flask run --host=0.0.0.0
+
 
 import requests
 from flask import Flask, render_template
@@ -279,15 +279,17 @@ def downloadData ():
     return data
 
 
-if __name__ == '__main__':
-    
-    fill_data_from_HOPU_and_do_ML()
+#if __name__ == '__main__':
+# MAIN
 
-    scheduler = BackgroundScheduler(timezone='Europe/Madrid') # Default timezone is "utc"
-    #scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'interval', seconds=5)
-    scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'cron', day_of_week='*', hour='*', minute='*')
-    #scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'cron', day_of_week='mon-fri', hour='7-20', minute='*/5')
-    scheduler.start()
+fill_data_from_HOPU_and_do_ML()
 
-    app.run(host="0.0.0.0")
+scheduler = BackgroundScheduler(timezone='Europe/Madrid') # Default timezone is "utc"
+#scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'interval', seconds=5)
+scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'cron', day_of_week='*', hour='*', minute='*')
+#scheduler.add_job(fill_data_from_HOPU_and_do_ML, 'cron', day_of_week='mon-fri', hour='7-20', minute='*/5')
+scheduler.start()
+#app.run(host="0.0.0.0")
+
+# START APP: flask run --host=0.0.0.0
 
